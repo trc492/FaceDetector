@@ -46,6 +46,7 @@ public class FaceDetector extends JPanel
     private static final long serialVersionUID = 1L;
     private static final String programTitle = "OpenCV Face Detector";
     private static final String classifierPath = "cascade-files/haarcascade_frontalface_alt.xml";
+    private static final String overlayImagePath = "images/Mustache.png";
 
     private VideoCapture camera;
     private Mat image;
@@ -105,20 +106,11 @@ public class FaceDetector extends JPanel
         //
         // Load the overlay image and preserves the alpha channel (i.e. transparency).
         //
-//      overlayImage = Highgui.imread("images/antlers.png", -1);
-        overlayImage = Highgui.imread("images/Mustache.png", -1);
+        overlayImage = Highgui.imread(overlayImagePath, -1);
         //
         // Load the Frontal Face cascade specifier as the face detector.
         //
         faceDetector = new CascadeClassifier(classifierPath);
-        //
-        // For Windows compatibility, we need to remove the '/' prefix character.
-        //
-        if (faceDetector.empty() && classifierPath.charAt(0) == '/')
-        {
-            faceDetector.load(classifierPath.substring(1));
-        }
-
         if (faceDetector.empty())
         {
             throw new RuntimeException("Failed to load Cascade Classifier <" + classifierPath + ">");
