@@ -96,15 +96,15 @@ public class FaceDetector extends JPanel
         camera = new VideoCapture(0);
         if (!camera.isOpened())
         {
-            throw new RuntimeException("Failed to open camera");
+            throw new RuntimeException("Failed to open camera.");
         }
         //
-        // Preallocated some global variables.
+        // Preallocate some global variables.
         //
         image = new Mat();
         faceRects = new MatOfRect();
         //
-        // Load the overlay image and preserves the alpha channel (i.e. transparency).
+        // Load the overlay image and preserve the alpha channel (i.e. transparency).
         //
         overlayImage = Highgui.imread(overlayImagePath, -1);
         //
