@@ -18,7 +18,7 @@ menu. On the left pane, click open `Java->Build Path->User Libraries`. If you se
 right pane, you have already added OpenCV library previously. If not, click the `New` button and
 type `OpenCV-2.4.13` as the User library name, then click `OK`. While having the new library
 highlighted, click the `Add External JARs` button. Navigate to your `<workspace>/FaceDetector/OpenCV-2_4_13`
-folder and select the `opencv-2412.jar` file and click the `Open` button. Now expand the new library
+folder and select the `opencv-2413.jar` file and click the `Open` button. Now expand the new library
 `OpenCV-2.4.13->opencv-2413.jar - FaceDetector/OpenCV-2_4_13->Native library location: (None)`, then
 click the `Edit` button. Click the `External folder` button and navigate to the
 `<workspace>/FaceDetector/OpenCV-2_4_13/x64` folder (or x86 if you have a 32-bit system) and click OK
