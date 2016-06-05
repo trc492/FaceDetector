@@ -108,7 +108,7 @@ public class FaceDetector extends JPanel
         //
         overlayImage = Highgui.imread(overlayImagePath, -1);
         //
-        // Load the Frontal Face cascade specifier as the face detector.
+        // Load the Frontal Face cascade classifier as the face detector.
         //
         faceDetector = new CascadeClassifier(classifierPath);
         if (faceDetector.empty())
@@ -172,7 +172,7 @@ public class FaceDetector extends JPanel
             //
             // Only overlay fun image to the first detected face.
             //
-            if (i == 0)
+//            if (i == 0)
             {
                 //
                 // Scale the fun image to the same size as the face.
