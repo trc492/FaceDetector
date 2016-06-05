@@ -240,6 +240,8 @@ public class FaceDetector extends JPanel
                     double opacity = srcPixel[3]/255.0;
                     //
                     // Merge the source pixel to the destination pixel with the proper opacity.
+                    // Each color pixel consists of 3 channels: BGR (Blue, Green, Red).
+                    // The fourth channel is opacity and is only applicable for the overlay image.
                     //
                     for (int channel = 0; channel < background.channels(); channel++)
                     {
