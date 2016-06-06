@@ -53,6 +53,8 @@ public class FaceDetector extends JPanel
     private MatOfRect faceRects;
     private Mat overlayImage;
     private CascadeClassifier faceDetector;
+    private long totalProcessingTime = 0;
+    private long framesProcessed = 0;
 
     /**
      * This is the entry point of the program. It creates and initializes the main window. It also
@@ -137,8 +139,16 @@ public class FaceDetector extends JPanel
         // Capture an image and subject it for face detection. The face detector produces an array
         // of rectangles representing faces detected.
         //
+        long startTime = System.currentTimeMillis();
         camera.read(image);
         faceDetector.detectMultiScale(image, faceRects);
+        long elapsedTime = System.currentTimeMillis() - startTime;
+        totalProcessingTime += elapsedTime;
+        framesProcessed++;
+        if (framesProcessed%10 == 0)
+        {
+            System.out.printf("Average Processing Time = %d\n", totalProcessingTime/framesProcessed);
+        }
         //
         // We may want to overlay a circle or rectangle on each detected faces or
         // we can overlay a fun image onto a detected face. Play with the code in

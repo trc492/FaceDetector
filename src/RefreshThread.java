@@ -41,12 +41,12 @@ public class RefreshThread extends Thread
         while (true)
         {
             //
-            // Repaint the video pane at 30fps (every 33 msec).
+            // Repaint the video pane at 8fps (every 125 msec).
             //
             panel.repaint();
             try 
             {
-                Thread.sleep(33);
+                Thread.sleep(100);
             }
             catch (InterruptedException e)
             {
