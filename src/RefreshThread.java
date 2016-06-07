@@ -29,10 +29,12 @@ import javax.swing.JPanel;
 public class RefreshThread extends Thread
 {
     private JPanel panel;
+    private long refreshInterval;
 
-    public RefreshThread(JPanel panel)
+    public RefreshThread(JPanel panel, long refreshInterval)
     {
         this.panel = panel;
+        this.refreshInterval = refreshInterval;
     }   //RefreshThread
 
     @Override
@@ -41,12 +43,12 @@ public class RefreshThread extends Thread
         while (true)
         {
             //
-            // Repaint the video pane at 8fps (every 125 msec).
+            // Repaint the video pane every refreshInterval.
             //
             panel.repaint();
             try 
             {
-                Thread.sleep(100);
+                Thread.sleep(refreshInterval);
             }
             catch (InterruptedException e)
             {

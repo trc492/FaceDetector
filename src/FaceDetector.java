@@ -123,9 +123,9 @@ public class FaceDetector extends JPanel
         camera.read(image);
         frame.setSize(image.width(), image.height() + 35);
         //
-        // Create the Refresh thread to refresh the video pane at 30fps.
+        // Create the Refresh thread to refresh the video pane at 8fps (every 125 msec).
         //
-        new RefreshThread(this).start();
+        new RefreshThread(this, 125).start();
     }   //FaceDetector
 
     /**
@@ -143,6 +143,7 @@ public class FaceDetector extends JPanel
         camera.read(image);
         faceDetector.detectMultiScale(image, faceRects);
         long elapsedTime = System.currentTimeMillis() - startTime;
+
         totalProcessingTime += elapsedTime;
         framesProcessed++;
         if (framesProcessed%10 == 0)
