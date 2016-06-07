@@ -47,6 +47,7 @@ public class FaceDetector extends JPanel
     private static final String programTitle = "OpenCV Face Detector";
     private static final String classifierPath = "cascade-files/haarcascade_frontalface_alt.xml";
     private static final String overlayImagePath = "images/Mustache.png";
+    private static final boolean perfCheckEnabled = false;
 
     private VideoCapture camera;
     private Mat image;
@@ -72,6 +73,9 @@ public class FaceDetector extends JPanel
                     {
                         JFrame frame = new JFrame(programTitle);
                         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+                        //
+                        // No layout, non-resizable, auto location at center.
+                        //
                         frame.setLayout(null);
                         frame.setResizable(false);
                         frame.setContentPane(new FaceDetector(frame));
@@ -123,7 +127,7 @@ public class FaceDetector extends JPanel
         camera.read(image);
         frame.setSize(image.width(), image.height() + 35);
         //
-        // Create the Refresh thread to refresh the video pane at 8fps (every 125 msec).
+        // Create the Refresh thread to refresh the video pane at 8fps (i.e. every 125 msec).
         //
         new RefreshThread(this, 125).start();
     }   //FaceDetector
@@ -144,11 +148,14 @@ public class FaceDetector extends JPanel
         faceDetector.detectMultiScale(image, faceRects);
         long elapsedTime = System.currentTimeMillis() - startTime;
 
-        totalProcessingTime += elapsedTime;
-        framesProcessed++;
-        if (framesProcessed%10 == 0)
+        if (perfCheckEnabled)
         {
-            System.out.printf("Average Processing Time = %d\n", totalProcessingTime/framesProcessed);
+            totalProcessingTime += elapsedTime;
+            framesProcessed++;
+            if (framesProcessed%10 == 0)
+            {
+                System.out.printf("Average Processing Time = %d\n", totalProcessingTime/framesProcessed);
+            }
         }
         //
         // We may want to overlay a circle or rectangle on each detected faces or

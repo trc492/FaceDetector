@@ -46,14 +46,32 @@ public class RefreshThread extends Thread
             // Repaint the video pane every refreshInterval.
             //
             panel.repaint();
-            try 
+            sleep(refreshInterval);
+        }
+    }   //run
+
+    /**
+     * This method puts the current thread to sleep for the given time in msec.
+     * It handles InterruptException where it recalculates the remaining time
+     * and calls sleep again repeatedly until the specified sleep time has past.
+     *
+     * @param sleepTime specifies sleep time in msec.
+     */
+    public static void sleep(long sleepTime)
+    {
+        long wakeupTime = System.currentTimeMillis() + sleepTime;
+
+        while (sleepTime > 0)
+        {
+            try
             {
-                Thread.sleep(refreshInterval);
+                Thread.sleep(sleepTime);
             }
             catch (InterruptedException e)
             {
             }
-        }  
-    }   //run
+            sleepTime = wakeupTime - System.currentTimeMillis();
+        }
+    }   //sleep
 
 }   //RefreshThread
