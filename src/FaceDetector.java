@@ -127,9 +127,9 @@ public class FaceDetector extends JPanel
         camera.read(image);
         frame.setSize(image.width(), image.height() + 35);
         //
-        // Create the Refresh thread to refresh the video pane at 8fps (i.e. every 125 msec).
+        // Create the Refresh thread to refresh the video pane at 10fps (i.e. every 100 msec).
         //
-        new RefreshThread(this, 125).start();
+        new RefreshThread(this, 100).start();
     }   //FaceDetector
 
     /**
@@ -285,7 +285,7 @@ public class FaceDetector extends JPanel
      * @param mat specifies an OpenCV image.
      * @return converted BufferedImage object.
      */
-    public BufferedImage MatToBufferedImage(Mat mat)
+    private BufferedImage MatToBufferedImage(Mat mat)
     {
         BufferedImage image = new BufferedImage(mat.width(), mat.height(), BufferedImage.TYPE_3BYTE_BGR);
         WritableRaster raster = image.getRaster();
