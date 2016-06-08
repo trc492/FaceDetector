@@ -200,8 +200,8 @@ public class FaceDetector extends JPanel
                 //
                 // Overlay the scaled image to the camera image.
                 //
-//                overlayImage(image, scaledOverlay, new Point(rects[i].x, rects[i].y - rects[i].height));
-                overlayImage(image, scaledOverlay, new Point(rects[i].x, rects[i].y));
+//                overlayImage(image, scaledOverlay, rects[i].x, rects[i].y - rects[i].height);
+                overlayImage(image, scaledOverlay, rects[i].x, rects[i].y);
             }
         }
         //
@@ -217,10 +217,12 @@ public class FaceDetector extends JPanel
      *
      * @param background specifies the background image.
      * @param overlay specifies the overlay image.
-     * @param location specifies the location on the background image where the upper left corner of
-     *        the overlay image should be at.
+     * @param locX specifies the X location on the background image where the upper left corner of the overlay
+     *        image should be at
+     * @param locY specifies the Y location on the backgorund image where the upper left corner of the overlay
+     *        image should be at.
      */
-    private void overlayImage(Mat background, Mat overlay, Point location)
+    private void overlayImage(Mat background, Mat overlay, int locX, int locY)
     {
         //
         // Make sure the background image has 3 channels and the overlay image has 4 channels.
@@ -236,7 +238,7 @@ public class FaceDetector extends JPanel
                 // Calculate the corresponding row number of the background image.
                 // Skip the row if it is outside of the background image.
                 //
-                int destRow = (int)location.y + row;
+                int destRow = locY + row;
                 if (destRow < 0 || destRow >= background.rows()) continue;
                 //
                 // For each column of the overlay image.
@@ -247,7 +249,7 @@ public class FaceDetector extends JPanel
                     // Calculate the corresponding column number of background image.
                     // Skip the column if it is outside of the background image.
                     //
-                    int destCol = (int)location.x + col;
+                    int destCol = locX + col;
                     if (destCol < 0 || destCol >= background.cols()) continue;
                     //
                     // Get the source pixel from the overlay image and the destination pixel from the
