@@ -26,7 +26,6 @@ import java.awt.image.*;
 import javax.swing.*;
 
 import org.opencv.core.*;
-import org.opencv.core.Point;
 import org.opencv.highgui.Highgui;
 import org.opencv.highgui.VideoCapture;
 import org.opencv.imgproc.Imgproc;
