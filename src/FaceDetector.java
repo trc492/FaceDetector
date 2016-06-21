@@ -26,6 +26,7 @@ import java.awt.image.*;
 import javax.swing.*;
 
 import org.opencv.core.*;
+import org.opencv.core.Point;
 import org.opencv.highgui.Highgui;
 import org.opencv.highgui.VideoCapture;
 import org.opencv.imgproc.Imgproc;
@@ -55,6 +56,9 @@ public class FaceDetector extends JPanel
     private CascadeClassifier faceDetector;
     private long totalProcessingTime = 0;
     private long framesProcessed = 0;
+    private boolean doOverlayImage = true;
+    private boolean overlayRectangle = false;
+    private boolean overlayCircle = false;
 
     /**
      * This is the entry point of the program. It creates and initializes the main window. It also
@@ -113,6 +117,10 @@ public class FaceDetector extends JPanel
         //
         overlayImage = Highgui.imread(overlayImagePath, -1);
         //
+        // Cannot do overlay unless the overlay image has all the rgba channels.
+        //
+        if (overlayImage.channels() < 4) doOverlayImage = false;
+        //
         // Load the Frontal Face cascade classifier as the face detector.
         //
         faceDetector = new CascadeClassifier(classifierPath);
@@ -124,6 +132,10 @@ public class FaceDetector extends JPanel
         // Determine the camera image size and make the window size to match.
         //
         camera.read(image);
+        //
+        // Cannot do overlay unless the camera image has the rgb channels (i.e. color).
+        //
+        if (image.channels() < 3) doOverlayImage = false;
         frame.setSize(image.width(), image.height() + 35);
         //
         // Create the Refresh thread to refresh the video pane at 10fps (i.e. every 100 msec).
@@ -156,52 +168,70 @@ public class FaceDetector extends JPanel
                 System.out.printf("Average Processing Time = %d\n", totalProcessingTime/framesProcessed);
             }
         }
+
         //
         // We may want to overlay a circle or rectangle on each detected faces or
         // we can overlay a fun image onto a detected face. Play with the code in
         // this for-loop and let your imagination run wild.
         //
         Rect[] rects = faceRects.toArray();
+        int maxArea = 0;
+        int maxIndex = -1;
         for (int i = 0; i < rects.length; i++)
         {
-            /*
             //
             // Draw a circle around the detected face.
             //
-            Core.ellipse(
-                    image,
-                    new RotatedRect(
-                            new Point(rects[i].x + rects[i].width/2, rects[i].y + rects[i].height/2),
-                            rects[i].size(),
-                            0.0),
-                    new Scalar(0, 255, 0));
-            */
-            /*
+            if (overlayCircle)
+            {
+                Core.ellipse(
+                        image,
+                        new RotatedRect(
+                                new Point(rects[i].x + rects[i].width/2, rects[i].y + rects[i].height/2),
+                                rects[i].size(),
+                                0.0),
+                        new Scalar(0, 255, 0));
+            }
             //
             // Draw a rectangle around the detected face.
             //
-            Core.rectangle(
-                    image,
-                    new Point(rects[i].x, rects[i].y),
-                    new Point(rects[i].x + rects[i].width, rects[i].y + rects[i].height),
-                    new Scalar(0, 255, 0));
-            */
-            //
-            // Only overlay fun image to the first detected face.
-            //
-//            if (i == 0)
+            if (overlayRectangle)
             {
-                //
-                // Scale the fun image to the same size as the face.
-                //
-                Mat scaledOverlay = new Mat();
-                Imgproc.resize(overlayImage, scaledOverlay, rects[i].size());
-                //
-                // Overlay the scaled image to the camera image.
-                //
-//                overlayImage(image, scaledOverlay, rects[i].x, rects[i].y - rects[i].height);
-                overlayImage(image, scaledOverlay, rects[i].x, rects[i].y);
+                Core.rectangle(
+                        image,
+                        new Point(rects[i].x, rects[i].y),
+                        new Point(rects[i].x + rects[i].width, rects[i].y + rects[i].height),
+                        new Scalar(0, 255, 0));
             }
+            //
+            // Find the largest detected face.
+            //
+            if (doOverlayImage)
+            {
+                int area = rects[i].width * rects[i].height;
+                if (area > maxArea)
+                {
+                    maxArea = area;
+                    maxIndex = i;
+                }
+            }
+        }
+
+        //
+        // Only overlay fun image to the largest detected face.
+        //
+        if (doOverlayImage && maxIndex != -1)
+        {
+            //
+            // Scale the fun image to the same size as the face.
+            //
+            Mat scaledOverlay = new Mat();
+            Imgproc.resize(overlayImage, scaledOverlay, rects[maxIndex].size());
+            //
+            // Overlay the scaled image to the camera image.
+            //
+//            combineImage(image, scaledOverlay, rects[maxIndex].x, rects[maxIndex].y - rects[maxIndex].height);
+            combineImage(image, scaledOverlay, rects[maxIndex].x, rects[maxIndex].y);
         }
         //
         // Convert the OpenCV Mat image format to BufferedImage format and draw it on the video pane.
@@ -221,12 +251,12 @@ public class FaceDetector extends JPanel
      * @param locY specifies the Y location on the backgorund image where the upper left corner of the overlay
      *        image should be at.
      */
-    private void overlayImage(Mat background, Mat overlay, int locX, int locY)
+    private void combineImage(Mat background, Mat overlay, int locX, int locY)
     {
         //
         // Make sure the background image has 3 channels and the overlay image has 4 channels.
         //
-        if (background.channels() == 3 && overlay.channels() == 4)
+        if (background.channels() >= 3 && overlay.channels() >= 4)
         {
             //
             // For each row of the overlay image.
@@ -262,7 +292,7 @@ public class FaceDetector extends JPanel
                     // Each color pixel consists of 3 channels: BGR (Blue, Green, Red).
                     // The fourth channel is opacity and is only applicable for the overlay image.
                     //
-                    for (int channel = 0; channel < background.channels(); channel++)
+                    for (int channel = 0; channel < 3; channel++)
                     {
                         destPixel[channel] = destPixel[channel]*(1.0 - opacity) + srcPixel[channel]*opacity;
                     }
@@ -275,9 +305,10 @@ public class FaceDetector extends JPanel
         }
         else
         {
-            throw new RuntimeException("Invalid image format.");
+            throw new RuntimeException(
+                "Invalid image format (src=" + overlay.channels() + ",dst=" + background.channels() + ").");
         }
-    }    //overlayImage
+    }    //combineImage
 
     /**
      * This method converts an OpenCV image (i.e. Mat) into a BufferedImage that can be drawn on
