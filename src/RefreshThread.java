@@ -30,6 +30,7 @@ public class RefreshThread extends Thread
 {
     private JPanel panel;
     private long refreshInterval;
+    private boolean threadRunning = true;
 
     public RefreshThread(JPanel panel, long refreshInterval)
     {
@@ -37,10 +38,15 @@ public class RefreshThread extends Thread
         this.refreshInterval = refreshInterval;
     }   //RefreshThread
 
+    public void terminate()
+    {
+        threadRunning = false;
+    }   //terminate
+
     @Override
     public void run()
     {
-        while (true)
+        while (threadRunning)
         {
             //
             // Repaint the video pane every refreshInterval.

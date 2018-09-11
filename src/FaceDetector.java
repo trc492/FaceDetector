@@ -21,6 +21,8 @@
  */
 
 import java.awt.*;
+import java.awt.event.WindowEvent;
+import java.awt.event.WindowListener;
 import java.awt.image.*;
 
 import javax.swing.*;
@@ -41,7 +43,7 @@ import org.opencv.objdetect.CascadeClassifier;
  * - Overlay an image onto another image with transparency.
  * - Translate between the OpenCV Mat image format and the BufferedImage format for display.
  */
-public class FaceDetector extends JPanel
+public class FaceDetector extends JPanel implements WindowListener
 {
     private static final long serialVersionUID = 1L;
     private static final String programTitle = "OpenCV Face Detector";
@@ -59,6 +61,7 @@ public class FaceDetector extends JPanel
     private boolean doOverlayImage = true;
     private boolean overlayRectangle = false;
     private boolean overlayCircle = false;
+    private RefreshThread cameraThread;
 
     /**
      * This is the entry point of the program. It creates and initializes the main window. It also
@@ -95,6 +98,7 @@ public class FaceDetector extends JPanel
      */
     private FaceDetector(JFrame frame)
     {
+        frame.addWindowListener(this);
         //
         // Load OpenCV library.
         //
@@ -140,7 +144,8 @@ public class FaceDetector extends JPanel
         //
         // Create the Refresh thread to refresh the video pane at 10fps (i.e. every 100 msec).
         //
-        new RefreshThread(this, 100).start();
+        cameraThread = new RefreshThread(this, 100);
+        cameraThread.start();
     }   //FaceDetector
 
     /**
@@ -327,5 +332,52 @@ public class FaceDetector extends JPanel
 
         return image;
     }   //MatToBufferedImage
+
+    //
+    // Implements WindowListener interface.
+    //
+
+    @Override
+    public void windowActivated(WindowEvent e)
+    {
+    }   //windowActivated
+
+    @Override
+    public void windowClosed(WindowEvent e)
+    {
+    }   //windowClosed
+
+    /**
+     * This method is called when the "X" Window Close button is clicked. This will exit the
+     * program. If the log file has changes, it will prompt the user to save the changes before
+     * exiting. The user has the options to save the changes and exit or discard the changes
+     * and exit.
+     */
+    @Override
+    public void windowClosing(WindowEvent e)
+    {
+        cameraThread.terminate();
+        camera.release();
+    }   //windowClosing
+
+    @Override
+    public void windowDeactivated(WindowEvent e)
+    {
+    }   //windowDeactivated
+
+    @Override
+    public void windowDeiconified(WindowEvent e)
+    {
+    }   //windowDeiconified
+
+    @Override
+    public void windowIconified(WindowEvent e)
+    {
+    }   //windowIconified
+
+    @Override
+    public void windowOpened(WindowEvent e)
+    {
+    }   //windowOpened
 
 }   //class FaceDetector
