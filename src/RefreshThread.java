@@ -32,17 +32,29 @@ public class RefreshThread extends Thread
     private long refreshInterval;
     private boolean threadRunning = true;
 
+    /**
+     * Constructor: Create an instance of the object.
+     *
+     * @param panel specifies the panel to draw the image on.
+     * @param refreshInterval specifies the refresh interval in msec.
+     */
     public RefreshThread(JPanel panel, long refreshInterval)
     {
         this.panel = panel;
         this.refreshInterval = refreshInterval;
     }   //RefreshThread
 
+    /**
+     * This method terminates the thread.
+     */
     public void terminate()
     {
         threadRunning = false;
     }   //terminate
 
+    /**
+     * This method runs the thread. It refresh the panel with the camera image at refresh rate.
+     */
     @Override
     public void run()
     {

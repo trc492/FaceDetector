@@ -348,10 +348,8 @@ public class FaceDetector extends JPanel implements WindowListener
     }   //windowClosed
 
     /**
-     * This method is called when the "X" Window Close button is clicked. This will exit the
-     * program. If the log file has changes, it will prompt the user to save the changes before
-     * exiting. The user has the options to save the changes and exit or discard the changes
-     * and exit.
+     * This method is called when the "X" Window Close button is clicked. This will exit the program. It makes sure
+     * the program shuts down properly by terminating the camera thread releasing the camera.
      */
     @Override
     public void windowClosing(WindowEvent e)
