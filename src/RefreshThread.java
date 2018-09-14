@@ -47,7 +47,7 @@ public class RefreshThread extends Thread
     /**
      * This method terminates the thread.
      */
-    public void terminate()
+    public synchronized void terminate()
     {
         threadRunning = false;
     }   //terminate
@@ -63,7 +63,10 @@ public class RefreshThread extends Thread
             //
             // Repaint the video pane every refreshInterval.
             //
-            panel.repaint();
+            synchronized(this)
+            {
+                panel.repaint();
+            }
             sleep(refreshInterval);
         }
     }   //run
